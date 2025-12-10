@@ -1,0 +1,62 @@
+name: Deploy Bot+MSTeams using Terraform
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          auth-type: service_principal
+
+    # #--------------------------
+    # # Setup Terraform
+    # #--------------------------
+    # - name: Set up Terraform
+    #   uses: hashicorp/setup-terraform@v3
+    #   with:
+    #     terraform_version: 1.7.6
+
+    #--------------------------
+    # Terraform Init
+    #--------------------------
+    - name: Terraform Init
+      run: |
+        cd ./terraform
+        terraform init
+
+    #--------------------------
+    # Terraform Plan
+    #--------------------------
+    - name: Terraform Plan
+      run: |
+        cd ./terraform
+        terraform plan -out=tfplan
+
+    #--------------------------
+    # Terraform Apply
+    #--------------------------
+    - name: Terraform Apply
+      run: |
+        cd ./terraform
+        terraform apply -auto-approve tfplan
