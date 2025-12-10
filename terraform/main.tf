@@ -22,7 +22,9 @@ provider "azurerm" {
 tenant_id = "63b9a1c1-375c-42cf-9c63-dc3798c7ae5e"
 }
 
-provider "azuread" {}
+provider "azuread" {
+  tenant_id = "63b9a1c1-375c-42cf-9c63-dc3798c7ae5e"
+}
 
 #--------------------------
 # Resource Group
